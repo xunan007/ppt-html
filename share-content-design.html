@@ -1,0 +1,972 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>内容设计</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17202a;
+      --muted: #596675;
+      --soft: #eef2f7;
+      --line: #d8e0ea;
+      --blue: #2f6fdb;
+      --green: #25865f;
+      --amber: #b7791f;
+      --red: #b64242;
+      --panel: rgba(255, 255, 255, 0.82);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #f7f4ef;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      letter-spacing: 0;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(120deg, rgba(47, 111, 219, 0.10), transparent 32%),
+        linear-gradient(300deg, rgba(37, 134, 95, 0.10), transparent 36%),
+        radial-gradient(circle at 90% 8%, rgba(183, 121, 31, 0.11), transparent 26%),
+        #f7f4ef;
+    }
+
+    .deck {
+      height: 100dvh;
+      width: 100vw;
+      transform: translateY(0);
+      transition: transform 520ms cubic-bezier(.22, .61, .36, 1);
+      will-change: transform;
+    }
+
+    .slide {
+      min-height: 100dvh;
+      width: 100vw;
+      padding: 5.2vh 5vw;
+      display: grid;
+      place-items: center;
+      position: relative;
+    }
+
+    .stage {
+      width: 100%;
+      max-width: 1840px;
+      min-height: min(82dvh, 980px);
+      display: grid;
+      align-content: center;
+      gap: 28px;
+    }
+
+    .stage.wide {
+      max-width: 2040px;
+    }
+
+    .title-stage {
+      min-height: min(84dvh, 1040px);
+      align-content: center;
+      gap: clamp(24px, 3.6vmin, 48px);
+    }
+
+    .title-header {
+      display: grid;
+      gap: clamp(18px, 2.2vmin, 28px);
+      padding-bottom: clamp(18px, 2.4vmin, 34px);
+      border-bottom: 1px solid rgba(23, 32, 42, 0.14);
+    }
+
+    .title-stage h1 {
+      max-width: none;
+      text-wrap: balance;
+    }
+
+    .title-stage .section-title .primary {
+      font-size: clamp(4.1rem, 8.2vmin, 9.2rem);
+    }
+
+    .title-stage .section-title .secondary {
+      font-size: clamp(2rem, 4vmin, 4.2rem);
+      font-weight: 800;
+    }
+
+    .title-stage .metric-row {
+      align-items: stretch;
+    }
+
+    .section-title {
+      display: grid;
+      gap: clamp(10px, 1.5vmin, 18px);
+    }
+
+    .section-title .primary {
+      color: var(--blue);
+      font-size: clamp(3.2rem, 6.2vmin, 6.8rem);
+      line-height: 1;
+      font-weight: 880;
+    }
+
+    .section-title .secondary {
+      color: var(--ink);
+      font-size: clamp(1.65rem, 3.2vmin, 3.4rem);
+      line-height: 1.16;
+      font-weight: 760;
+    }
+
+    .eyebrow {
+      color: var(--blue);
+      font-size: clamp(0.92rem, 1.4vmin, 1.25rem);
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      max-width: 1280px;
+      font-size: clamp(3.6rem, 7.6vmin, 8.4rem);
+      line-height: 1.03;
+      font-weight: 860;
+    }
+
+    h2 {
+      font-size: clamp(2.7rem, 5.2vmin, 5.8rem);
+      line-height: 1.06;
+      font-weight: 840;
+    }
+
+    h3 {
+      font-size: clamp(1.34rem, 2.2vmin, 2rem);
+      line-height: 1.2;
+      font-weight: 780;
+    }
+
+    .lead {
+      max-width: 1040px;
+      color: var(--muted);
+      font-size: clamp(1.2rem, 2.2vmin, 2rem);
+      line-height: 1.55;
+      font-weight: 520;
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .cols-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .cols-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .cols-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .card,
+    .strip,
+    .quote {
+      border: 1px solid rgba(23, 32, 42, 0.10);
+      background: var(--panel);
+      box-shadow: 0 24px 60px rgba(23, 32, 42, 0.08);
+      backdrop-filter: blur(12px);
+      border-radius: 8px;
+    }
+
+    .card {
+      padding: clamp(20px, 2.4vmin, 36px);
+      min-height: 164px;
+      display: grid;
+      align-content: start;
+      gap: 14px;
+    }
+
+    .card.compact {
+      min-height: 0;
+      padding: clamp(18px, 2vmin, 28px);
+    }
+
+    .tag {
+      width: fit-content;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: var(--soft);
+      color: var(--muted);
+      font-size: clamp(0.82rem, 1.15vmin, 1rem);
+      font-weight: 760;
+      white-space: nowrap;
+    }
+
+    ul,
+    ol {
+      margin: 0;
+      padding-left: 1.18em;
+      color: var(--muted);
+      font-size: clamp(1rem, 1.72vmin, 1.42rem);
+      line-height: 1.45;
+    }
+
+    li + li {
+      margin-top: 0.42em;
+    }
+
+    .big-list {
+      font-size: clamp(1.08rem, 1.92vmin, 1.56rem);
+      line-height: 1.42;
+    }
+
+    .metric-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .metric {
+      padding: clamp(22px, 2.4vmin, 36px);
+      border-radius: 8px;
+      background: #fff;
+      border: 1px solid rgba(23, 32, 42, 0.10);
+      box-shadow: 0 18px 48px rgba(23, 32, 42, 0.07);
+    }
+
+    .metric strong {
+      display: block;
+      margin-bottom: 12px;
+      font-size: clamp(2.2rem, 4.2vmin, 4.6rem);
+      line-height: 1;
+      color: var(--blue);
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: clamp(1.05rem, 1.75vmin, 1.5rem);
+      line-height: 1.4;
+      font-weight: 650;
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .task {
+      min-height: 170px;
+      padding: clamp(18px, 2vmin, 30px);
+      border-radius: 8px;
+      background: #fff;
+      border: 1px solid rgba(23, 32, 42, 0.10);
+      display: grid;
+      align-content: start;
+      gap: 14px;
+    }
+
+    .task b {
+      display: block;
+      font-size: clamp(1.18rem, 1.9vmin, 1.62rem);
+      color: var(--blue);
+    }
+
+    .task p {
+      color: var(--muted);
+      font-size: clamp(0.98rem, 1.52vmin, 1.24rem);
+      line-height: 1.45;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr;
+      align-items: stretch;
+      gap: 14px;
+    }
+
+    .flow .arrow {
+      align-self: center;
+      color: var(--blue);
+      font-size: clamp(1.8rem, 3vmin, 3.2rem);
+      font-weight: 800;
+    }
+
+    .quote {
+      padding: clamp(28px, 4vmin, 56px);
+      display: grid;
+      gap: 18px;
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .quote p {
+      font-size: clamp(1.6rem, 3.1vmin, 3.2rem);
+      line-height: 1.28;
+      font-weight: 780;
+    }
+
+    .quote span {
+      color: var(--muted);
+      font-size: clamp(1.05rem, 1.8vmin, 1.45rem);
+      line-height: 1.5;
+    }
+
+    .strip {
+      padding: clamp(20px, 2.4vmin, 34px);
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .strip strong {
+      font-size: clamp(1.2rem, 2.2vmin, 2rem);
+      color: var(--ink);
+    }
+
+    .strip p,
+    .strip li {
+      font-size: clamp(0.98rem, 1.55vmin, 1.28rem);
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .mode {
+      display: grid;
+      grid-template-columns: 86px 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .mode h3 + ul {
+      margin-top: 12px;
+    }
+
+    .badge {
+      width: 72px;
+      height: 72px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      color: #fff;
+      font-weight: 900;
+      font-size: clamp(1.18rem, 2vmin, 1.7rem);
+      background: var(--blue);
+    }
+
+    .blue { color: var(--blue); }
+    .green { color: var(--green); }
+    .amber { color: var(--amber); }
+    .red { color: var(--red); }
+
+    .footer {
+      position: absolute;
+      left: 5vw;
+      right: 5vw;
+      bottom: 5.2vh;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: rgba(23, 32, 42, 0.45);
+      font-size: 0.92rem;
+      font-weight: 650;
+    }
+
+    .progress {
+      width: min(320px, 32vw);
+      height: 5px;
+      border-radius: 999px;
+      background: rgba(23, 32, 42, 0.12);
+      overflow: hidden;
+      display: none;
+    }
+
+    .progress i {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: var(--blue);
+      transition: width 320ms ease;
+    }
+
+    .fixed-progress {
+      position: fixed;
+      left: 5vw;
+      right: 5vw;
+      bottom: 2.6vh;
+      z-index: 10;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(23, 32, 42, 0.12);
+      overflow: hidden;
+      box-shadow: 0 10px 28px rgba(23, 32, 42, 0.10);
+    }
+
+    .fixed-progress i {
+      display: block;
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--blue), var(--green), var(--amber));
+      transition: width 560ms cubic-bezier(.22, .61, .36, 1);
+    }
+
+    @media (max-width: 1100px) {
+      .cols-4,
+      .timeline {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .cols-3,
+      .metric-row {
+        grid-template-columns: 1fr;
+      }
+
+      .flow {
+        grid-template-columns: 1fr;
+      }
+
+      .flow .arrow {
+        display: none;
+      }
+
+      .split {
+        grid-template-columns: 1fr;
+      }
+
+      .strip {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .agent-columns {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .process-card {
+      min-height: 420px;
+      display: grid;
+      align-content: start;
+      gap: clamp(18px, 2vmin, 28px);
+    }
+
+    .process-card h3 {
+      color: var(--ink);
+      font-size: clamp(1.45rem, 2.35vmin, 2.15rem);
+    }
+
+    .process-steps {
+      display: grid;
+      gap: 10px;
+      padding: 0;
+      list-style: none;
+      color: var(--muted);
+      font-size: clamp(0.98rem, 1.58vmin, 1.3rem);
+      line-height: 1.34;
+    }
+
+    .process-steps li {
+      margin: 0;
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: rgba(238, 242, 247, 0.78);
+      border: 1px solid rgba(23, 32, 42, 0.07);
+    }
+
+    @media (max-width: 1100px) {
+      .agent-columns {
+        grid-template-columns: 1fr;
+      }
+
+      .process-card {
+        min-height: 0;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .slide {
+        padding: 4.4vh 5vw;
+      }
+
+      .stage {
+        min-height: 86dvh;
+        gap: 18px;
+      }
+
+      h1 {
+        font-size: 3rem;
+      }
+
+      h2 {
+        font-size: 2.25rem;
+      }
+
+      .cols-2,
+      .cols-4,
+      .timeline {
+        grid-template-columns: 1fr;
+      }
+
+      .task {
+        min-height: 0;
+      }
+
+      .footer {
+        display: none;
+      }
+
+      .fixed-progress {
+        left: 5vw;
+        right: 5vw;
+        bottom: 1.8vh;
+        height: 5px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck" id="deck">
+    <section class="slide title-slide">
+      <div class="stage wide title-stage">
+        <div class="title-header">
+          <div class="section-title">
+            <div class="primary">一个普通 PM 的一天</div>
+            <div class="secondary"><span class="blue">4</span> 类工作、<span class="green">3</span> 类软件、<span class="amber">2</span> 种 AI 新模式</div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric">
+            <strong>4</strong>
+            <span>项目进度管理、会议管理、PPT 撰写、邮件回复</span>
+          </div>
+          <div class="metric">
+            <strong>3</strong>
+            <span>IM、邮箱、PPT/文档工具</span>
+          </div>
+          <div class="metric">
+            <strong>2</strong>
+            <span>办公 Agent + IM 协同；用 HTML 做 PPT 初稿</span>
+          </div>
+        </div>
+      </div>
+      <div class="footer"><span>01 / 09</span><div class="progress"><i></i></div></div>
+    </section>
+
+    <section class="slide">
+      <div class="stage wide">
+        <div class="section-title">
+          <div class="primary">角色与任务</div>
+          <div class="secondary">小陈：快消行业 PM，非互联网背景</div>
+        </div>
+        <div class="timeline">
+          <div class="task">
+            <b>早上</b>
+            <p>打开飞书文档，梳理当前项目进度，再根据待办事项拉会议。</p>
+          </div>
+          <div class="task">
+            <b>会前</b>
+            <p>临时有更重要的会议，需要修改原会议时间，并拉群告知参会同事。</p>
+          </div>
+          <div class="task">
+            <b>下午</b>
+            <p>老板要求明天做汇报，需要罗列提纲，输出 PPT 和汇报稿。</p>
+          </div>
+          <div class="task">
+            <b>下午五点</b>
+            <p>日本同事发来邮件，她要翻译、理解、组织中文，再转写成英文回复。</p>
+          </div>
+          <div class="task">
+            <b>下班前</b>
+            <p>写周报（周五），检查不同项目进度表，并把进度汇总到周报中。</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer"><span>02 / 09</span><div class="progress"><i></i></div></div>
+    </section>
+
+    <section class="slide">
+      <div class="stage wide">
+        <div class="section-title">
+          <div class="primary">传统模式</div>
+          <div class="secondary">L0：全手动工作，核心成本是“切换”和“搬运”</div>
+        </div>
+        <div class="grid cols-2">
+          <div class="card mode">
+            <div class="badge">01</div>
+            <div>
+              <h3>项目进度管理</h3>
+              <ul>
+                <li>手动找到对应项目表</li>
+                <li>逐个检查状态、风险和负责人</li>
+                <li>最后再整理成汇总表</li>
+              </ul>
+            </div>
+          </div>
+          <div class="card mode">
+            <div class="badge">02</div>
+            <div>
+              <h3>会议管理</h3>
+              <ul>
+                <li>在 IM 里创建会议主题</li>
+                <li>人工选择时间并检查冲突</li>
+                <li>变更时间后手动通知和解释</li>
+              </ul>
+            </div>
+          </div>
+          <div class="card mode">
+            <div class="badge">03</div>
+            <div>
+              <h3>PPT 撰写</h3>
+              <ul>
+                <li>先组织大纲，再扩写内容</li>
+                <li>把文本搬到 PPT 上</li>
+                <li>反复排版、删减、调整</li>
+              </ul>
+            </div>
+          </div>
+          <div class="card mode">
+            <div class="badge">04</div>
+            <div>
+              <h3>邮件管理</h3>
+              <ul>
+                <li>先翻译非中文邮件</li>
+                <li>中文组织回复，再转写英文</li>
+                <li>回到邮箱处理格式并发送</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="footer"><span>03 / 09</span><div class="progress"><i></i></div></div>
+    </section>
+
+    <section class="slide">
+      <div class="stage wide">
+        <div class="section-title">
+          <div class="primary">工具辅助模式</div>
+          <div class="secondary">L1：开始用 AI 和模板，把局部动作变快</div>
+        </div>
+        <div class="grid cols-3">
+          <div class="card">
+            <span class="tag">项目进度</span>
+            <h3>定制机器人 + 项目模板</h3>
+            <ul>
+              <li>用模板规范项目字段</li>
+              <li>监测进度变更</li>
+              <li>提醒风险和待办</li>
+            </ul>
+          </div>
+          <div class="card">
+            <span class="tag">会议管理</span>
+            <h3>IM 功能 + 自然语言模板</h3>
+            <ul>
+              <li>用固定格式发起或变更会议</li>
+              <li>一键拉群沟通</li>
+              <li>自动生成通知话术</li>
+            </ul>
+          </div>
+          <div class="card">
+            <span class="tag">PPT 撰写</span>
+            <h3>ChatBot 辅助生成初稿</h3>
+            <ul>
+              <li>让 LLM 帮忙组织大纲</li>
+              <li>扩写每页内容</li>
+              <li>输出 pptx 初稿后人工调整</li>
+            </ul>
+          </div>
+        </div>
+        <p class="lead">这一阶段的价值很直接：少做重复劳动。但它更多是在“一个点”上帮忙，还没有真正接管完整流程。</p>
+      </div>
+      <div class="footer"><span>04 / 09</span><div class="progress"><i></i></div></div>
+    </section>
+
+    <section class="slide">
+      <div class="stage">
+        <div class="section-title">
+          <div class="primary">工具辅助，就是 AI 提效的终点了吗？</div>
+          <div class="secondary">如果流程仍靠人串联，AI 只是更快的“外包助手”</div>
+        </div>
+        <div class="flow">
+          <div class="card compact">
+            <span class="tag">过去</span>
+            <h3>问 AI 一个问题</h3>
+            <ul><li>回答一段文本</li><li>解决一个局部任务</li></ul>
+          </div>
+          <div class="arrow">→</div>
+          <div class="card compact">
+            <span class="tag">现在</span>
+            <h3>让 AI 调用工具</h3>
+            <ul><li>读文档</li><li>查日程</li><li>改内容</li></ul>
+          </div>
+          <div class="arrow">→</div>
+          <div class="card compact">
+            <span class="tag">目标</span>
+            <h3>让 AI 参与流程</h3>
+            <ul><li>理解上下文</li><li>串联步骤</li><li>沉淀方法</li></ul>
+          </div>
+        </div>
+        <p class="lead">下一步，是让 AI 参与流程本身。</p>
+      </div>
+      <div class="footer"><span>05 / 09</span><div class="progress"><i></i></div></div>
+    </section>
+
+    <section class="slide">
+      <div class="stage wide">
+        <div class="section-title">
+          <div class="primary">Agent 协同模式</div>
+          <div class="secondary">L2：从“做某一步”变成“串起一条流程”</div>
+        </div>
+        <div class="agent-columns">
+          <div class="card process-card">
+            <h3>项目与周报</h3>
+            <ol class="process-steps">
+              <li>任意项目进度梳理</li>
+              <li>对应主题发起会议</li>
+              <li>周度项目汇总写入周报</li>
+            </ol>
+          </div>
+          <div class="card process-card">
+            <h3>邮件回复</h3>
+            <ol class="process-steps">
+              <li>接收到邮件</li>
+              <li>非母语翻译</li>
+              <li>组织回复语言</li>
+              <li>翻译转写</li>
+              <li>内容确认</li>
+              <li>自动处理格式并发送</li>
+            </ol>
+          </div>
+          <div class="card process-card">
+            <h3>PPT 生产</h3>
+            <ol class="process-steps">
+              <li>PPT 提纲撰写</li>
+              <li>固定每页 bullet points</li>
+              <li>转写成 HTML</li>
+              <li>实时预览和样式调整</li>
+              <li>沉淀成完整 skill</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+      <div class="footer"><span>06 / 09</span><div class="progress"><i></i></div></div>
+    </section>
+
+    <section class="slide">
+      <div class="stage wide">
+        <div class="section-title">
+          <div class="primary">重点教学 1</div>
+          <div class="secondary">办公 Agent + IM 协同：要讲什么</div>
+        </div>
+        <div class="grid cols-3">
+          <div class="card">
+            <span class="tag">Agent 宿主</span>
+            <h3>AI 助手运行在哪里</h3>
+            <ul>
+              <li>workbuddy / claudecode / codex / openclaw</li>
+              <li>如何安装</li>
+              <li>基础功能扫盲</li>
+            </ul>
+          </div>
+          <div class="card">
+            <span class="tag">模型选择</span>
+            <h3>背后接哪个大模型</h3>
+            <ul>
+              <li>deepseek / glm / chatgpt / gemini / claude</li>
+              <li>Agent 宿主如何接入 provider</li>
+              <li>梳理不同模型的适用场景</li>
+            </ul>
+          </div>
+          <div class="card">
+            <span class="tag">IM 协同</span>
+            <h3>打通飞书、文档和沟通</h3>
+            <ul>
+              <li>接入 IM 的 MCP / CLI</li>
+              <li>怎么打通</li>
+              <li>打通后能做什么</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="footer"><span>07 / 09</span><div class="progress"><i></i></div></div>
+    </section>
+
+    <section class="slide">
+      <div class="stage wide">
+        <div class="section-title">
+          <div class="primary">重点教学 2</div>
+          <div class="secondary">用 HTML 做 PPT 初稿：要讲什么</div>
+        </div>
+        <div class="grid cols-2">
+          <div class="card">
+            <span class="tag">先用起来</span>
+            <h3>把 HTML 理解成“内容结构”</h3>
+            <ul>
+              <li>HTML 类似在 Word / PPT 里界定标题、段落、单行文本、图片</li>
+              <li>CSS 类似调整文字样式、图片样式、透明度和布局</li>
+              <li>不深入学习概念，先让模型直接输出 HTML</li>
+            </ul>
+          </div>
+          <div class="card">
+            <span class="tag">低成本修改</span>
+            <h3>用搜索和对话完成迭代</h3>
+            <ul>
+              <li>文本修改直接 Ctrl+F / Command+F</li>
+              <li>样式有问题，直接让模型改</li>
+              <li>逐步理解标签、页面结构和渲染失败原因</li>
+            </ul>
+          </div>
+          <div class="card">
+            <span class="tag">好 PPT 的基本要求</span>
+            <h3>建立对输出效果的判断</h3>
+            <ul>
+              <li>每页 slide 撑满视窗</li>
+              <li>视窗缩放时内容保持可读</li>
+              <li>首页居中，内容页排版和边距统一</li>
+              <li>鼠标滚轮 / 键盘上下键可以控制翻页</li>
+            </ul>
+          </div>
+          <div class="card">
+            <span class="tag">沉淀方法</span>
+            <h3>形成自己的模板和 skill</h3>
+            <ul>
+              <li>积累不同风格的 HTML 模板</li>
+              <li>把常用 PPT 生产流程写成自己的提示词</li>
+              <li>进一步定制自己的 PPT 撰写 skills</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="footer"><span>08 / 09</span><div class="progress"><i></i></div></div>
+    </section>
+
+    <section class="slide">
+      <div class="stage">
+        <div class="section-title">
+          <div class="primary">总结</div>
+          <div class="secondary">从“问 AI 一个问题”，到“让 AI 参与一个流程”</div>
+        </div>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>这次分享要让大家带走</h3>
+            <ul class="big-list">
+              <li>AI 提效不是只会写文案，而是能重塑工作流</li>
+              <li>先从一个真实任务开始，再逐步接入工具</li>
+              <li>普通职场人也可以拥有自己的办公自动化能力</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>最后的落点</h3>
+            <ul class="big-list">
+              <li>4 类工作：项目、会议、PPT、邮件与周报</li>
+              <li>3 类软件：IM、邮箱、PPT / 文档</li>
+              <li>2 种新模式：Agent 协同、HTML PPT 初稿</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="footer"><span>09 / 09</span><div class="progress"><i></i></div></div>
+    </section>
+  </main>
+  <div class="fixed-progress" aria-hidden="true"><i id="fixedProgress"></i></div>
+
+  <script>
+    const deck = document.querySelector("#deck");
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    const progressBars = Array.from(document.querySelectorAll(".progress i"));
+    const fixedProgress = document.querySelector("#fixedProgress");
+    let index = 0;
+    let wheelRemainder = 0;
+    let wheelLockedUntil = 0;
+    const wheelThreshold = 90;
+    const wheelCooldown = 950;
+
+    function update() {
+      deck.style.transform = `translateY(${-index * 100}dvh)`;
+      const progress = `${((index + 1) / slides.length) * 100}%`;
+      progressBars.forEach((bar) => {
+        bar.style.width = progress;
+      });
+      fixedProgress.style.width = progress;
+      history.replaceState(null, "", `#${index + 1}`);
+    }
+
+    function go(nextIndex) {
+      const bounded = Math.max(0, Math.min(slides.length - 1, nextIndex));
+      if (bounded === index) return;
+      index = bounded;
+      update();
+    }
+
+    window.addEventListener("keydown", (event) => {
+      const nextKeys = ["ArrowDown", "PageDown", " ", "Enter"];
+      const prevKeys = ["ArrowUp", "PageUp", "Backspace"];
+      if (nextKeys.includes(event.key)) {
+        event.preventDefault();
+        go(index + 1);
+      }
+      if (prevKeys.includes(event.key)) {
+        event.preventDefault();
+        go(index - 1);
+      }
+      if (event.key === "Home") {
+        event.preventDefault();
+        go(0);
+      }
+      if (event.key === "End") {
+        event.preventDefault();
+        go(slides.length - 1);
+      }
+    });
+
+    window.addEventListener("wheel", (event) => {
+      event.preventDefault();
+
+      const now = Date.now();
+      if (now < wheelLockedUntil) {
+        wheelRemainder = 0;
+        return;
+      }
+
+      wheelRemainder += event.deltaY;
+      if (Math.abs(wheelRemainder) < wheelThreshold) return;
+
+      const direction = wheelRemainder > 0 ? 1 : -1;
+      wheelRemainder = 0;
+      wheelLockedUntil = now + wheelCooldown;
+      go(index + direction);
+    }, { passive: false });
+
+    window.addEventListener("resize", update);
+
+    const hashIndex = Number.parseInt(location.hash.slice(1), 10);
+    if (Number.isFinite(hashIndex)) {
+      index = Math.max(0, Math.min(slides.length - 1, hashIndex - 1));
+    }
+    update();
+  </script>
+</body>
+</html>
